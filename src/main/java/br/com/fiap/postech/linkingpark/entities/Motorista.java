@@ -1,4 +1,4 @@
-package br.com.fiap.postech.standardparking.entities;
+package br.com.fiap.postech.linkingpark.entities;
 
 
 import jakarta.persistence.*;

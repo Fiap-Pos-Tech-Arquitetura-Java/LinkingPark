@@ -1,13 +1,13 @@
-package br.com.fiap.postech.standardparking;
+package br.com.fiap.postech.linkingpark;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StandardParkingApplication {
+public class LinkingParkApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StandardParkingApplication.class, args);
+        SpringApplication.run(LinkingParkApplication.class, args);
     }
 
 }

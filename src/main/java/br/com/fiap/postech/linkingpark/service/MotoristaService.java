@@ -1,9 +1,9 @@
-package br.com.fiap.postech.standardparking.service;
+package br.com.fiap.postech.linkingpark.service;
 
-import br.com.fiap.postech.standardparking.controller.exception.ControllerNotFoundException;
-import br.com.fiap.postech.standardparking.dto.MotoristaDTO;
-import br.com.fiap.postech.standardparking.entities.Motorista;
-import br.com.fiap.postech.standardparking.repository.MotoristaRepository;
+import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
+import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
+import br.com.fiap.postech.linkingpark.entities.Motorista;
+import br.com.fiap.postech.linkingpark.repository.MotoristaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

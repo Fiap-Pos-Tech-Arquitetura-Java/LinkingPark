@@ -1,4 +1,4 @@
-package br.com.fiap.postech.standardparking.dto;
+package br.com.fiap.postech.linkingpark.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;

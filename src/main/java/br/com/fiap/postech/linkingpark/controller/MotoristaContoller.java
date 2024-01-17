@@ -1,7 +1,7 @@
-package br.com.fiap.postech.standardparking.controller;
+package br.com.fiap.postech.linkingpark.controller;
 
-import br.com.fiap.postech.standardparking.dto.MotoristaDTO;
-import br.com.fiap.postech.standardparking.service.MotoristaService;
+import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
+import br.com.fiap.postech.linkingpark.service.MotoristaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
