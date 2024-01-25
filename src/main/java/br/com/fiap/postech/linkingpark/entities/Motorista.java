@@ -3,6 +3,9 @@ package br.com.fiap.postech.linkingpark.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Entity
 @Table(name = "tb_motorista")
 public class Motorista {
@@ -14,15 +17,24 @@ public class Motorista {
     private String nome;
     private String email;
     private String telefone;
+    private LocalDate dataNascimento;
+    private String sexo;
+    @OneToMany
+    private List<Veiculo> veiculos;
+    @ManyToOne
+    private FormaPagamento formaPagamentoPreferencial;
 
     public Motorista() {
         super();
     }
 
-    public Motorista(String nome, String email, String telefone) {
+    public Motorista(String nome, String email, String telefone, LocalDate dataNascimento, String sexo, FormaPagamento formaPagamentoPreferencial) {
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
+        this.dataNascimento = dataNascimento;
+        this.sexo = sexo;
+        this.formaPagamentoPreferencial = formaPagamentoPreferencial;
     }
 
     @Override
@@ -70,5 +82,37 @@ public class Motorista {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public List<Veiculo> getVeiculos() {
+        return veiculos;
+    }
+
+    public void setVeiculos(List<Veiculo> veiculos) {
+        this.veiculos = veiculos;
+    }
+
+    public FormaPagamento getFormaPagamentoPreferencial() {
+        return formaPagamentoPreferencial;
+    }
+
+    public void setFormaPagamentoPreferencial(FormaPagamento formaPagamentoPreferencial) {
+        this.formaPagamentoPreferencial = formaPagamentoPreferencial;
     }
 }
