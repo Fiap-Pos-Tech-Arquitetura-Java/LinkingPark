@@ -68,7 +68,7 @@ public class MotoristaService {
                 motoristaDTO.telefone(),
                 motoristaDTO.dataNascimento(),
                 motoristaDTO.sexo(),
-                formaPagamentoRepository.getReferenceById(motoristaDTO.id())
+                formaPagamentoRepository.getReferenceById(motoristaDTO.formaPagamentoPreferencial().id())
         );
     }
 
