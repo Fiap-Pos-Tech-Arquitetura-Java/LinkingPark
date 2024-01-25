@@ -30,9 +30,9 @@ public class Motorista {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Motorista check = (Motorista) o;
+        Motorista motorista = (Motorista) o;
 
-        return id.equals(check.id);
+        return id.equals(motorista.id);
     }
 
     @Override
