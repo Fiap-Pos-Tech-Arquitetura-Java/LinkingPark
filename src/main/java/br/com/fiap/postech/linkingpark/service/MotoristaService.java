@@ -31,10 +31,13 @@ public class MotoristaService {
         return motoristas.stream().map(this::toDTO).toList();
     }
 
-    public MotoristaDTO findById(Long id) {
-        Motorista Motorista = motoristaRepository.findById(id)
+    public Motorista get(Long id) {
+        return motoristaRepository.findById(id)
                 .orElseThrow(() -> new ControllerNotFoundException("Motorista não encontrado com o ID: " + id));
-        return toDTO(Motorista);
+    }
+
+    public MotoristaDTO findById(Long id) {
+        return toDTO(get(id));
     }
 
     public MotoristaDTO save(MotoristaDTO motoristaDTO) {

@@ -37,6 +37,14 @@ public class FormaPagamento {
         return id.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "FormaPagamento{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

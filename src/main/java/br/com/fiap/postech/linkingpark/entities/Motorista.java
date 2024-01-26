@@ -52,6 +52,19 @@ public class Motorista {
         return id.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "Motorista{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", telefone='" + telefone + '\'' +
+                ", dataNascimento=" + dataNascimento +
+                ", sexo='" + sexo + '\'' +
+                ", formaPagamentoPreferencial=" + formaPagamentoPreferencial +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

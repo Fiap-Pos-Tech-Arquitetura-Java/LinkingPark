@@ -20,6 +20,14 @@ public class Veiculo {
         this.placa = placa;
     }
 
+    @Override
+    public String toString() {
+        return "Veiculo{" +
+                "id=" + id +
+                ", placa='" + placa + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
