@@ -1,5 +1,6 @@
 package br.com.fiap.postech.linkingpark.message.listener;
 
+import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.linkingpark.entities.CompraTempo;
 import br.com.fiap.postech.linkingpark.service.NotificacaoService;
 import br.com.fiap.postech.linkingpark.message.sender.QueueSender;
@@ -40,7 +41,13 @@ public class AlertaTempoRestanteListener {
     }
 
     public void run(Long idCompraTempo) {
-        CompraTempo compraTempo = compraTempoService.get(idCompraTempo);
+        CompraTempo compraTempo;
+        try {
+            compraTempo = compraTempoService.get(idCompraTempo);
+        } catch (ControllerNotFoundException e) {
+            LOGGER.warn(e.getMessage());
+            return;
+        }
         LocalDateTime horaLimite = LocalDateTime.now().plusMinutes(this.delayAlerta);
         if ("FINALIZADO".equals(compraTempo.getStatus())) {
             LOGGER.info(Thread.currentThread().getName() + " " + compraTempo + " já saiu da vaga. " + horaLimite);
