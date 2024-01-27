@@ -1,18 +1,13 @@
 package br.com.fiap.postech.linkingpark.service;
 
-import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
 import br.com.fiap.postech.linkingpark.entities.CompraTempo;
-import br.com.fiap.postech.linkingpark.entities.NotificacaoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
-
+@Deprecated
 public class RecompraAutomaticaTimerTask extends TimerTask {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RecompraAutomaticaTimerTask.class);

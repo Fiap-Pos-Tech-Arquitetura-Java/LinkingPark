@@ -1,5 +1,6 @@
-package br.com.fiap.postech.linkingpark.entities;
+package br.com.fiap.postech.linkingpark.service;
 
+import br.com.fiap.postech.linkingpark.entities.CompraTempo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,10 @@ public class NotificacaoService {
 
     public void alertaRecargaAutomatica(CompraTempo compraTempo, LocalDateTime now) {
         LOGGER.info(new Object(){}.getClass().getEnclosingMethod().getName() + " " +
-                Thread.currentThread().getName() + " " + compraTempo + "\r\n uma recarga foi feita de forma automática pois a compra de tempo anterior ainda não foi finalizada " + now);
+                Thread.currentThread().getName() + " " + compraTempo +
+                "\r\n uma recarga foi feita de forma automática pois a compra de tempo anterior ainda não foi finalizada "
+                + now
+        );
     }
 
     public void alertaTempoRestante(CompraTempo compraTempo, LocalDateTime now) {

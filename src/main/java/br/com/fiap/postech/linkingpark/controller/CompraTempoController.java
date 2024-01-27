@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/compratempo")
 public class CompraTempoController {
@@ -35,6 +37,19 @@ public class CompraTempoController {
     @PutMapping("/{id}")
     public ResponseEntity<CompraTempoDTO> update(@PathVariable Long id) {
         CompraTempoDTO compraTempoDTO = compraTempoService.finaliza(id);
+        return ResponseEntity.ok(compraTempoDTO);
+    }
+
+    @Operation(summary = "obtém todos as compras de tempo")
+    @GetMapping
+    public ResponseEntity<List<CompraTempoDTO>> findAll() {
+        List<CompraTempoDTO> comprasTempo = compraTempoService.findAll();
+        return ResponseEntity.ok(comprasTempo);
+    }
+    @Operation(summary = "obtém uma compra de tempo")
+    @GetMapping("/{id}")
+    public ResponseEntity<CompraTempoDTO> findById(@PathVariable Long id) {
+        CompraTempoDTO compraTempoDTO = compraTempoService.findById(id);
         return ResponseEntity.ok(compraTempoDTO);
     }
 

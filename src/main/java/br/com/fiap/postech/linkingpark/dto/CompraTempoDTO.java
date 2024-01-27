@@ -28,6 +28,10 @@ public record CompraTempoDTO(
         Integer tempoEmMinutos,
 
         @Schema(example = "PIX", required = false, allowableValues = { "PIX", "Cartão de débito", "Cartão de crédito" } )
-        FormaPagamentoDTO formaPagamentoPreferencial
+        FormaPagamentoDTO formaPagamentoPreferencial,
+
+        String tarifa,
+
+        String valorTotalPago
 ) {
 }

@@ -3,7 +3,9 @@ package br.com.fiap.postech.linkingpark.service;
 import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
 import br.com.fiap.postech.linkingpark.dto.FormaPagamentoDTO;
+import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
 import br.com.fiap.postech.linkingpark.entities.*;
+import br.com.fiap.postech.linkingpark.message.sender.QueueSender;
 import br.com.fiap.postech.linkingpark.repository.CompraTempoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +13,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CompraTempoService {
-    @Value("${recarga.intervalo.emminutos}")
-    private Long periodoRecarga;
-    @Value("${alerta.intervalo.emminutos}")
-    private Long periodoAlerta;
-    @Value("${alert.tempo.antes.fim}")
-    private Long delayAlerta;
     @Autowired
     private MotoristaService motoristaService;
     @Autowired
-    private NotificacaoService notificacaoService;
-    @Autowired
     private CompraTempoRepository compraTempoRepository;
+    @Autowired
+    private QueueSender queueSender;
+    @Value("${tarifa}")
+    private String tarifa;
 
     private CompraTempoDTO toDTO(CompraTempo compraTempo) {
         return toDTO(Boolean.TRUE, compraTempo);
@@ -47,7 +46,9 @@ public class CompraTempoService {
                 compraTempo.getStatus(),
                 compraTempo.getTipo(),
                 compraTempo.getTempoEmMinutos(),
-                formaPagamentoDTO
+                formaPagamentoDTO,
+                compraTempo.getTarifa() != null ? compraTempo.getTarifa().toString() : null,
+                compraTempo.getValorTotalPago() != null ? compraTempo.getValorTotalPago().toString() : null
         );
     }
 
@@ -70,6 +71,9 @@ public class CompraTempoService {
                     + " não está cadastrada para o Motorista não encontrado com o ID: " + compraTempoDTO.idMotorista());
         }
 
+        //TODO - A opção PIX só está disponível para períodos de estacionamento fixos.
+        //TODO - tempo mínimo DE 20 minutos para tipo FIXO.
+
         FormaPagamento formaPagamento = null;
         if (compraTempoDTO.formaPagamentoPreferencial() == null || compraTempoDTO.formaPagamentoPreferencial().id() == null ) {
             formaPagamento = motorista.getFormaPagamentoPreferencial();
@@ -91,9 +95,10 @@ public class CompraTempoService {
         }
         compraTempo = compraTempoRepository.save(compraTempo);
 
-        new AlertaTempoRestanteTimerTask(this, notificacaoService, compraTempo.getId(), delayAlerta, periodoAlerta);
-        if ("VARIAVEL".equals(compraTempo.getTipo())) {
-            new RecompraAutomaticaTimerTask(this, notificacaoService, compraTempo.getId(), periodoRecarga);
+        if ("FIXO".equals(compraTempo.getTipo())) {
+            queueSender.sendAlertaTempoInicial(compraTempo);
+        } else if ("VARIAVEL".equals(compraTempo.getTipo())) {
+            queueSender.sendRecompraAutomatica(compraTempo);
         }
 
         return toDTO(compraTempo);
@@ -107,6 +112,7 @@ public class CompraTempoService {
         try {
             CompraTempo compraTempo = compraTempoRepository.getReferenceById(id);
             compraTempo.setStatus("FINALIZADO");
+            compraTempo.setTarifa(Double.valueOf(tarifa));
             compraTempo = compraTempoRepository.save(compraTempo);
             return toDTO(Boolean.FALSE, compraTempo);
         } catch (EntityNotFoundException e) {
@@ -120,5 +126,9 @@ public class CompraTempoService {
     }
     public CompraTempoDTO findById(Long id) {
         return toDTO(get(id));
+    }
+    public List<CompraTempoDTO> findAll() {
+        List<CompraTempo> compraTempo = compraTempoRepository.findAll();
+        return compraTempo.stream().map(this::toDTO).toList();
     }
 }

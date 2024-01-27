@@ -22,6 +22,8 @@ public class CompraTempo {
     private String tipo;
     private Integer tempoEmMinutos;
 
+    private Double tarifa;
+
     @ManyToOne
     private FormaPagamento formaPagamentoPreferencial;
 
@@ -121,7 +123,7 @@ public class CompraTempo {
     }
 
     public void adicionaUmaHora() {
-        setTempoEmMinutos(getTempoEmMinutos() + 60);
+        setTempoEmMinutos(getTempoEmMinutos() + 2);
     }
 
     public FormaPagamento getFormaPagamentoPreferencial() {
@@ -138,5 +140,20 @@ public class CompraTempo {
 
     public void setHoraCompra(LocalDateTime horaCompra) {
         this.horaCompra = horaCompra;
+    }
+
+    public Double getTarifa() {
+        return tarifa;
+    }
+
+    public void setTarifa(Double tarifa) {
+        this.tarifa = tarifa;
+    }
+
+    public Double getValorTotalPago() {
+        if (getTarifa() != null) {
+            return getTarifa() * getTempoEmMinutos();
+        }
+        return null;
     }
 }
