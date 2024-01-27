@@ -19,6 +19,8 @@ import java.util.Optional;
 @Service
 public class CompraTempoService {
     @Autowired
+    private FormaPagamentoService formaPagamentoService;
+    @Autowired
     private MotoristaService motoristaService;
     @Autowired
     private CompraTempoRepository compraTempoRepository;
@@ -71,13 +73,23 @@ public class CompraTempoService {
                     + " não está cadastrada para o Motorista não encontrado com o ID: " + compraTempoDTO.idMotorista());
         }
 
-        //TODO - A opção PIX só está disponível para períodos de estacionamento fixos.
-        //TODO - tempo mínimo DE 20 minutos para tipo FIXO.
-
-        FormaPagamento formaPagamento = null;
+        FormaPagamento formaPagamento;
         if (compraTempoDTO.formaPagamentoPreferencial() == null || compraTempoDTO.formaPagamentoPreferencial().id() == null ) {
             formaPagamento = motorista.getFormaPagamentoPreferencial();
+        } else {
+            formaPagamento = formaPagamentoService.get(compraTempoDTO.formaPagamentoPreferencial().id());
         }
+
+        if ("VARIAVEL".equals(compraTempoDTO.tipo())) {
+            if (formaPagamentoService.findByNome("PIX").equals(formaPagamento)) {
+                throw new ControllerNotFoundException("A opção PIX só está disponível para períodos de estacionamento FIXO.");
+            }
+        } else if ("FIXO".equals(compraTempoDTO.tipo())) {
+            if (compraTempoDTO.tempoEmMinutos() < 20) {
+                throw new ControllerNotFoundException("Estacionamento FIXO só permite a compra de no mínimo 20 minutos.");
+            }
+        }
+
         return new CompraTempo(motorista, optionalVeiculo.get(), "PENDENTE", compraTempoDTO.tipo(),
                 compraTempoDTO.tempoEmMinutos(), formaPagamento, LocalDateTime.now());
     }

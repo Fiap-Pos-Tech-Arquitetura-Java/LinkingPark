@@ -1,7 +1,10 @@
 package br.com.fiap.postech.linkingpark.service;
 
+import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
+import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
 import br.com.fiap.postech.linkingpark.dto.FormaPagamentoDTO;
 import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
+import br.com.fiap.postech.linkingpark.entities.CompraTempo;
 import br.com.fiap.postech.linkingpark.entities.FormaPagamento;
 import br.com.fiap.postech.linkingpark.entities.Motorista;
 import br.com.fiap.postech.linkingpark.repository.FormaPagamentoRepository;
@@ -42,9 +45,19 @@ public class FormaPagamentoService {
         List<FormaPagamento> motoristas = formaPagamentoRepository.findAll();
         return motoristas.stream().map(this::toDTO).toList();
     }
+    public FormaPagamento findByNome(String nome) {
+        return formaPagamentoRepository.findByNome(nome)
+                .orElseThrow(() -> new ControllerNotFoundException("Forma Pagamento não encontrado com o Nome: " + nome));
+    }
+
     public FormaPagamentoDTO save(FormaPagamentoDTO formaPagamentoDTO) {
         FormaPagamento formaPagamento = toEntity(formaPagamentoDTO);
         formaPagamento = formaPagamentoRepository.save(formaPagamento);
         return toDTO(formaPagamento);
+    }
+
+    public FormaPagamento get(Long id) {
+        return formaPagamentoRepository.findById(id)
+                .orElseThrow(() -> new ControllerNotFoundException("FormaPagamento não encontrado com o ID: " + id));
     }
 }
