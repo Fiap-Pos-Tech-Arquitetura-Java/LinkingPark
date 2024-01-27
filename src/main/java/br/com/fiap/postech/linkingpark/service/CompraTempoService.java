@@ -28,6 +28,8 @@ public class CompraTempoService {
     private QueueSender queueSender;
     @Value("${tarifa}")
     private String tarifa;
+    @Value("${compratempo.minimo.emminutos}")
+    private Integer tempoMinimoTipoFixo;
 
     private CompraTempoDTO toDTO(CompraTempo compraTempo) {
         return toDTO(Boolean.TRUE, compraTempo);
@@ -85,7 +87,7 @@ public class CompraTempoService {
                 throw new ControllerNotFoundException("A opção PIX só está disponível para períodos de estacionamento FIXO.");
             }
         } else if ("FIXO".equals(compraTempoDTO.tipo())) {
-            if (compraTempoDTO.tempoEmMinutos() < 20) {
+            if (compraTempoDTO.tempoEmMinutos() < tempoMinimoTipoFixo) {
                 throw new ControllerNotFoundException("Estacionamento FIXO só permite a compra de no mínimo 20 minutos.");
             }
         }
