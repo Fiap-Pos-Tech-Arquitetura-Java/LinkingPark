@@ -10,6 +10,9 @@ import java.util.List;
 public record MotoristaDTO(
         Long id,
 
+        @NotBlank(message = "Cpf do Motorista é obrigatório")
+        Long cpf,
+
         @NotBlank(message = "Nome do Motorista é obrigatório")
         String nome,
 

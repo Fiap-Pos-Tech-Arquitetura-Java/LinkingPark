@@ -66,7 +66,9 @@ public class MotoristaService {
     }
 
     private Motorista toEntity(MotoristaDTO motoristaDTO) {
-        return new Motorista(motoristaDTO.nome(),
+        return new Motorista(
+                motoristaDTO.cpf(),
+                motoristaDTO.nome(),
                 motoristaDTO.email(),
                 motoristaDTO.telefone(),
                 motoristaDTO.dataNascimento(),
@@ -76,7 +78,7 @@ public class MotoristaService {
     }
 
     private Veiculo toVeiculoEntity(VeiculoDTO veiculoDTO) {
-        return new Veiculo(veiculoDTO.placa());
+        return new Veiculo(veiculoDTO.placa(), veiculoDTO.modelo(), veiculoDTO.cor());
     }
 
     private MotoristaDTO toDTO(Motorista motorista) {
@@ -86,6 +88,7 @@ public class MotoristaService {
     private MotoristaDTO toDTO(Boolean includeId, Motorista motorista) {
         return new MotoristaDTO(
                 getId(includeId, motorista),
+                motorista.getCpf(),
                 motorista.getNome(),
                 motorista.getEmail(),
                 motorista.getTelefone(),
@@ -99,7 +102,7 @@ public class MotoristaService {
     }
 
     private VeiculoDTO toVeiculoDTO(Veiculo veiculo) {
-        return new VeiculoDTO(veiculo.getPlaca());
+        return new VeiculoDTO(veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor());
     }
 
     private Long getId(boolean includeId, Motorista motorista) {
@@ -113,7 +116,7 @@ public class MotoristaService {
         try {
             Motorista motorista = motoristaRepository.getReferenceById(id);
 
-            Veiculo veiculo = new Veiculo(veiculoDTO.placa());
+            Veiculo veiculo = new Veiculo(veiculoDTO.placa(), veiculoDTO.modelo(), veiculoDTO.cor());
             veiculoRepository.save(veiculo);
 
             motorista.getVeiculos().add(veiculo);

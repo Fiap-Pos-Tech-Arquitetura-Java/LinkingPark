@@ -9,6 +9,10 @@ import java.time.LocalDate;
 public record VeiculoDTO(
 
         @NotBlank(message = "Placa do veiculo do Motorista é obrigatório")
-        String placa
+        String placa,
+        @NotBlank(message = "Modelo do veiculo do Motorista é obrigatório")
+        String modelo,
+        @NotBlank(message = "Cor do veiculo do Motorista é obrigatório")
+        String cor
 ) {
 }

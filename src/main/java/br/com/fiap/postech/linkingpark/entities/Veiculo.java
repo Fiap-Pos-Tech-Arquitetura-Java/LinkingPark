@@ -11,13 +11,19 @@ public class Veiculo {
 
     private String placa;
 
+    private String modelo;
+
+    private String cor;
+
     public Veiculo() {
         super();
     }
 
-    public Veiculo(String placa) {
+    public Veiculo(String placa, String modelo, String cor) {
         this();
         this.placa = placa;
+        this.modelo = modelo;
+        this.cor = cor;
     }
 
     @Override
@@ -25,6 +31,8 @@ public class Veiculo {
         return "Veiculo{" +
                 "id=" + id +
                 ", placa='" + placa + '\'' +
+                ( modelo != null ? ", modelo='" + modelo + '\'' : "" ) +
+                ( cor != null ? ", placa='" + cor + '\'' : "" ) +
                 '}';
     }
 
@@ -42,5 +50,21 @@ public class Veiculo {
 
     public void setPlaca(String placa) {
         this.placa = placa;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public String getCor() {
+        return cor;
+    }
+
+    public void setCor(String cor) {
+        this.cor = cor;
     }
 }

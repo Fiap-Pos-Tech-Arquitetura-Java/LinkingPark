@@ -14,6 +14,7 @@ public class Motorista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long cpf;
     private String nome;
     private String email;
     private String telefone;
@@ -28,7 +29,8 @@ public class Motorista {
         super();
     }
 
-    public Motorista(String nome, String email, String telefone, LocalDate dataNascimento, String sexo, FormaPagamento formaPagamentoPreferencial) {
+    public Motorista(Long cpf, String nome, String email, String telefone, LocalDate dataNascimento, String sexo, FormaPagamento formaPagamentoPreferencial) {
+        this.cpf = cpf;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
@@ -56,6 +58,7 @@ public class Motorista {
     public String toString() {
         return "Motorista{" +
                 "id=" + id +
+                ", cpf='" + cpf + '\'' +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
                 ", telefone='" + telefone + '\'' +
@@ -71,6 +74,14 @@ public class Motorista {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(Long cpf) {
+        this.cpf = cpf;
     }
 
     public String getNome() {
