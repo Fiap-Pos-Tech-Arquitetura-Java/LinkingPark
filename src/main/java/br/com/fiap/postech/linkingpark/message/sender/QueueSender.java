@@ -2,6 +2,8 @@ package br.com.fiap.postech.linkingpark.message.sender;
 
 import br.com.fiap.postech.linkingpark.entities.CompraTempo;
 import br.com.fiap.postech.linkingpark.message.config.QueueConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class QueueSender {
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(QueueSender.class);
+
     @Autowired
     private AmqpTemplate amqpTemplate;;
 
@@ -35,28 +40,20 @@ public class QueueSender {
     }
 
     private void send(String queueName, Long idCompraTempo, Long delay) {
-        //Send message to delay queue
-        amqpTemplate.convertAndSend(
-                QueueConfig.CUSTOM_EXCHANGE,
-                queueName + "RoutingQueue",
-                idCompraTempo.toString(),
-            message -> {
-                message.getMessageProperties().setHeader("x-delay", delay * 60 * 1000);
-                return message;
-            }
-        );
-    }
-
-    /*private void send(String queueName, Long  idCompraTempo, Long delay) {
-        byte[] messageBodyBytes = idCompraTempo.toString().getBytes();
-        AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
-        HashMap<String, Object> headers = new HashMap<String, Object>();
-        headers.put("x-delay", delay);
-        props.headers(headers);
+        LOGGER.info("enviando mensagem para a fila " + queueName +
+                " da compra " + idCompraTempo + " com o delay " + delay);
         try {
-            new MeuChannel().getChannel().basicPublish(queueName, "", props.build(), messageBodyBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            amqpTemplate.convertAndSend(
+                    QueueConfig.CUSTOM_EXCHANGE,
+                    queueName + "RoutingQueue",
+                    idCompraTempo.toString(),
+                    message -> {
+                        message.getMessageProperties().setHeader("x-delay", delay * 60 * 1000);
+                        return message;
+                    }
+            );
+        } catch (Exception e) {
+            LOGGER.error("", e);
         }
-    }*/
+    }
 }
