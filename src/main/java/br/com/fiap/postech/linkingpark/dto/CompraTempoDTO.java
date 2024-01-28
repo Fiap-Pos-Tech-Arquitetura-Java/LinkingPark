@@ -8,11 +8,11 @@ import jakarta.validation.constraints.NotBlank;
 public record CompraTempoDTO(
 
 
-        Long id,
+        String id,
 
         @NotBlank(message = "id do motorista")
         @Schema(example = "1", required = true)
-        Long idMotorista,
+        String idMotorista,
 
         @NotBlank(message = "Placa do veiculo que ficará estacionado")
         @Schema(example = "ABC1234", required = true)

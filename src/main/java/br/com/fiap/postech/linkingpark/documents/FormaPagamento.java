@@ -1,15 +1,14 @@
-package br.com.fiap.postech.linkingpark.entities;
+package br.com.fiap.postech.linkingpark.documents;
 
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "tb_forma_pagamento")
+@Document("forma_pagamento")
 public class FormaPagamento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String nome;
 
@@ -45,11 +44,11 @@ public class FormaPagamento {
                 '}';
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -1,12 +1,8 @@
 package br.com.fiap.postech.linkingpark.service;
 
 import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
-import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
 import br.com.fiap.postech.linkingpark.dto.FormaPagamentoDTO;
-import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
-import br.com.fiap.postech.linkingpark.entities.CompraTempo;
-import br.com.fiap.postech.linkingpark.entities.FormaPagamento;
-import br.com.fiap.postech.linkingpark.entities.Motorista;
+import br.com.fiap.postech.linkingpark.documents.FormaPagamento;
 import br.com.fiap.postech.linkingpark.repository.FormaPagamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +26,7 @@ public class FormaPagamentoService {
         );
     }
 
-    private Long getId(boolean includeId, FormaPagamento formaPagamento) {
+    private String getId(boolean includeId, FormaPagamento formaPagamento) {
         if (includeId) {
             return formaPagamento.getId();
         }
@@ -56,8 +52,12 @@ public class FormaPagamentoService {
         return toDTO(formaPagamento);
     }
 
-    public FormaPagamento get(Long id) {
+    public FormaPagamento get(String id) {
         return formaPagamentoRepository.findById(id)
                 .orElseThrow(() -> new ControllerNotFoundException("FormaPagamento não encontrado com o ID: " + id));
+    }
+
+    public void deleteAll() {
+        formaPagamentoRepository.deleteAll();
     }
 }

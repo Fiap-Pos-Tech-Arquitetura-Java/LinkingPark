@@ -3,11 +3,9 @@ package br.com.fiap.postech.linkingpark.service;
 import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
 import br.com.fiap.postech.linkingpark.dto.FormaPagamentoDTO;
-import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
-import br.com.fiap.postech.linkingpark.entities.*;
+import br.com.fiap.postech.linkingpark.documents.*;
 import br.com.fiap.postech.linkingpark.message.sender.QueueSender;
 import br.com.fiap.postech.linkingpark.repository.CompraTempoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,7 +54,7 @@ public class CompraTempoService {
         );
     }
 
-    private Long getId(boolean includeId, CompraTempo compraTempo) {
+    private String getId(boolean includeId, CompraTempo compraTempo) {
         if (includeId) {
             return compraTempo.getId();
         }
@@ -76,10 +74,10 @@ public class CompraTempoService {
         }
 
         FormaPagamento formaPagamento;
-        if (compraTempoDTO.formaPagamentoPreferencial() == null || compraTempoDTO.formaPagamentoPreferencial().id() == null ) {
+        if (compraTempoDTO.formaPagamentoPreferencial() == null || compraTempoDTO.formaPagamentoPreferencial().nome() == null ) {
             formaPagamento = motorista.getFormaPagamentoPreferencial();
         } else {
-            formaPagamento = formaPagamentoService.get(compraTempoDTO.formaPagamentoPreferencial().id());
+            formaPagamento = formaPagamentoService.findByNome(compraTempoDTO.formaPagamentoPreferencial().nome());
         }
 
         if ("VARIAVEL".equals(compraTempoDTO.tipo())) {
@@ -122,27 +120,27 @@ public class CompraTempoService {
         compraTempoRepository.save(compraTempo);
     }
 
-    public CompraTempoDTO finaliza(Long id) {
-        try {
-            CompraTempo compraTempo = compraTempoRepository.getReferenceById(id);
-            compraTempo.setStatus("FINALIZADO");
-            compraTempo.setTarifa(Double.valueOf(tarifa));
-            compraTempo = compraTempoRepository.save(compraTempo);
-            return toDTO(Boolean.FALSE, compraTempo);
-        } catch (EntityNotFoundException e) {
-            throw new ControllerNotFoundException("Motorista não encontrado com o ID: " + id);
-        }
+    public CompraTempoDTO finaliza(String id) {
+        CompraTempo compraTempo = get(id);
+        compraTempo.setStatus("FINALIZADO");
+        compraTempo.setTarifa(Double.valueOf(tarifa));
+        compraTempo = compraTempoRepository.save(compraTempo);
+        return toDTO(Boolean.FALSE, compraTempo);
     }
 
-    public CompraTempo get(Long id) {
+    public CompraTempo get(String id) {
         return compraTempoRepository.findById(id)
                 .orElseThrow(() -> new ControllerNotFoundException("Compra Tempo não encontrado com o ID: " + id));
     }
-    public CompraTempoDTO findById(Long id) {
+    public CompraTempoDTO findById(String id) {
         return toDTO(get(id));
     }
     public List<CompraTempoDTO> findAll() {
         List<CompraTempo> compraTempo = compraTempoRepository.findAll();
         return compraTempo.stream().map(this::toDTO).toList();
+    }
+
+    public void deleteAll() {
+        compraTempoRepository.deleteAll();
     }
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record FormaPagamentoDTO(
-        Long id,
+        String id,
 
         String nome
 

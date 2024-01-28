@@ -1,7 +1,7 @@
 package br.com.fiap.postech.linkingpark.message.listener;
 
 import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundException;
-import br.com.fiap.postech.linkingpark.entities.CompraTempo;
+import br.com.fiap.postech.linkingpark.documents.CompraTempo;
 import br.com.fiap.postech.linkingpark.service.NotificacaoService;
 import br.com.fiap.postech.linkingpark.message.sender.QueueSender;
 import br.com.fiap.postech.linkingpark.service.CompraTempoService;
@@ -34,13 +34,12 @@ public class AlertaTempoRestanteListener {
     private QueueSender queueSender;
 
     @RabbitListener(queues = {"${queue.alerta.name}"})
-    public void receive(@Payload String fileBody) {
-        LOGGER.info("Message " + fileBody);
-        Long idCompraTempo = Long.valueOf(fileBody);
+    public void receive(@Payload String idCompraTempo) {
+        LOGGER.info("Message " + idCompraTempo);
         run(idCompraTempo);
     }
 
-    public void run(Long idCompraTempo) {
+    public void run(String idCompraTempo) {
         CompraTempo compraTempo;
         try {
             compraTempo = compraTempoService.get(idCompraTempo);

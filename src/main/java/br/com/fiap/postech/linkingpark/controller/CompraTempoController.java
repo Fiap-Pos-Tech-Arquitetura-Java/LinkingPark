@@ -1,9 +1,7 @@
 package br.com.fiap.postech.linkingpark.controller;
 
 import br.com.fiap.postech.linkingpark.dto.CompraTempoDTO;
-import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
 import br.com.fiap.postech.linkingpark.service.CompraTempoService;
-import br.com.fiap.postech.linkingpark.service.MotoristaService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,7 @@ public class CompraTempoController {
 
     @Operation(summary = "finaliza uma compra de tempo")
     @PutMapping("/{id}")
-    public ResponseEntity<CompraTempoDTO> update(@PathVariable Long id) {
+    public ResponseEntity<CompraTempoDTO> update(@PathVariable String id) {
         CompraTempoDTO compraTempoDTO = compraTempoService.finaliza(id);
         return ResponseEntity.ok(compraTempoDTO);
     }
@@ -48,7 +46,7 @@ public class CompraTempoController {
     }
     @Operation(summary = "obtém uma compra de tempo")
     @GetMapping("/{id}")
-    public ResponseEntity<CompraTempoDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<CompraTempoDTO> findById(@PathVariable String id) {
         CompraTempoDTO compraTempoDTO = compraTempoService.findById(id);
         return ResponseEntity.ok(compraTempoDTO);
     }

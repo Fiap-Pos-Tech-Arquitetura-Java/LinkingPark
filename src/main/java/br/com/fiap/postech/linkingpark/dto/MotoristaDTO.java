@@ -8,7 +8,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record MotoristaDTO(
-        Long id,
+        String id,
 
         @NotBlank(message = "Cpf do Motorista é obrigatório")
         Long cpf,

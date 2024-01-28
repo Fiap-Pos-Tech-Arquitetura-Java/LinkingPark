@@ -1,13 +1,12 @@
-package br.com.fiap.postech.linkingpark.entities;
+package br.com.fiap.postech.linkingpark.documents;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "tb_veiculos")
+@Document("veiculo")
 public class Veiculo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String placa;
 
@@ -36,11 +35,11 @@ public class Veiculo {
                 '}';
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -4,16 +4,15 @@ import br.com.fiap.postech.linkingpark.controller.exception.ControllerNotFoundEx
 import br.com.fiap.postech.linkingpark.dto.FormaPagamentoDTO;
 import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
 import br.com.fiap.postech.linkingpark.dto.VeiculoDTO;
-import br.com.fiap.postech.linkingpark.entities.FormaPagamento;
-import br.com.fiap.postech.linkingpark.entities.Motorista;
-import br.com.fiap.postech.linkingpark.entities.Veiculo;
+import br.com.fiap.postech.linkingpark.documents.Motorista;
+import br.com.fiap.postech.linkingpark.documents.Veiculo;
 import br.com.fiap.postech.linkingpark.repository.FormaPagamentoRepository;
 import br.com.fiap.postech.linkingpark.repository.MotoristaRepository;
 import br.com.fiap.postech.linkingpark.repository.VeiculoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,19 +23,19 @@ public class MotoristaService {
     @Autowired
     private VeiculoRepository veiculoRepository;
     @Autowired
-    private FormaPagamentoRepository formaPagamentoRepository;
+    private FormaPagamentoService formaPagamentoService;
 
     public List<MotoristaDTO> findAll() {
         List<Motorista> motoristas = motoristaRepository.findAll();
         return motoristas.stream().map(this::toDTO).toList();
     }
 
-    public Motorista get(Long id) {
+    public Motorista get(String id) {
         return motoristaRepository.findById(id)
                 .orElseThrow(() -> new ControllerNotFoundException("Motorista não encontrado com o ID: " + id));
     }
 
-    public MotoristaDTO findById(Long id) {
+    public MotoristaDTO findById(String id) {
         return toDTO(get(id));
     }
 
@@ -46,22 +45,18 @@ public class MotoristaService {
         return toDTO(motorista);
     }
 
-    public MotoristaDTO update(Long id, MotoristaDTO motoristaDTO) {
-        try {
-            Motorista motorista = motoristaRepository.getReferenceById(id);
+    public MotoristaDTO update(String id, MotoristaDTO motoristaDTO) {
+        Motorista motorista = get(id);
 
-            motorista.setNome(motoristaDTO.nome());
-            motorista.setEmail(motoristaDTO.email());
-            motorista.setTelefone(motoristaDTO.telefone());
+        motorista.setNome(motoristaDTO.nome());
+        motorista.setEmail(motoristaDTO.email());
+        motorista.setTelefone(motoristaDTO.telefone());
 
-            motorista = motoristaRepository.save(motorista);
-            return toDTO(Boolean.FALSE, motorista);
-        } catch (EntityNotFoundException e) {
-            throw new ControllerNotFoundException("Motorista não encontrado com o ID: " + id);
-        }
+        motorista = motoristaRepository.save(motorista);
+        return toDTO(Boolean.FALSE, motorista);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         motoristaRepository.deleteById(id);
     }
 
@@ -73,7 +68,7 @@ public class MotoristaService {
                 motoristaDTO.telefone(),
                 motoristaDTO.dataNascimento(),
                 motoristaDTO.sexo(),
-                formaPagamentoRepository.getReferenceById(motoristaDTO.formaPagamentoPreferencial().id())
+                formaPagamentoService.findByNome(motoristaDTO.formaPagamentoPreferencial().nome())
         );
     }
 
@@ -105,53 +100,49 @@ public class MotoristaService {
         return new VeiculoDTO(veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor());
     }
 
-    private Long getId(boolean includeId, Motorista motorista) {
+    private String getId(boolean includeId, Motorista motorista) {
         if (includeId) {
             return motorista.getId();
         }
         return null;
     }
 
-    public void adicionaVeiculo(Long id, VeiculoDTO veiculoDTO) {
-        try {
-            Motorista motorista = motoristaRepository.getReferenceById(id);
+    public void adicionaVeiculo(String id, VeiculoDTO veiculoDTO) {
+        Motorista motorista = get(id);
 
-            Veiculo veiculo = new Veiculo(veiculoDTO.placa(), veiculoDTO.modelo(), veiculoDTO.cor());
-            veiculoRepository.save(veiculo);
+        Veiculo veiculo = new Veiculo(veiculoDTO.placa(), veiculoDTO.modelo(), veiculoDTO.cor());
+        veiculoRepository.save(veiculo);
 
-            motorista.getVeiculos().add(veiculo);
+        if (motorista.getVeiculos() == null) {
+            motorista.setVeiculos(new ArrayList<>());
+        }
+        motorista.getVeiculos().add(veiculo);
 
+        motoristaRepository.save(motorista);
+    }
+
+    public void deleteVeiculo(String id, String placa) {
+        Motorista motorista = get(id);
+        if (motorista.getVeiculos() != null) {
+            List<Veiculo> veiculos = motorista.getVeiculos()
+                    .stream()
+                    .filter(v -> !v.getPlaca().equals(placa))
+                    .collect(Collectors.toList());
+            motorista.setVeiculos(veiculos);
             motoristaRepository.save(motorista);
-        } catch (EntityNotFoundException e) {
-            throw new ControllerNotFoundException("Motorista não encontrado com o ID: " + id);
         }
     }
 
-    public void deleteVeiculo(Long id, String placa) {
-        try {
-            Motorista motorista = motoristaRepository.getReferenceById(id);
-            if (motorista.getVeiculos() != null) {
-                List<Veiculo> veiculos = motorista.getVeiculos()
-                        .stream()
-                        .filter(v -> !v.getPlaca().equals(placa))
-                        .collect(Collectors.toList());
-                motorista.setVeiculos(veiculos);
-                motoristaRepository.save(motorista);
-            }
-        } catch (EntityNotFoundException e) {
-            throw new ControllerNotFoundException("Motorista não encontrado com o ID: " + id);
+    public List<VeiculoDTO> findAllVeiculos(String id) {
+        Motorista motorista = get(id);
+        if (motorista.getVeiculos() == null) {
+            return null;
         }
+        return motorista.getVeiculos().stream().map(this::toVeiculoDTO).toList();
     }
 
-    public List<VeiculoDTO> findAllVeiculos(Long id) {
-        try {
-            Motorista motorista = motoristaRepository.getReferenceById(id);
-            if (motorista.getVeiculos() == null) {
-                return null;
-            }
-            return motorista.getVeiculos().stream().map(this::toVeiculoDTO).toList();
-        } catch (EntityNotFoundException e) {
-            throw new ControllerNotFoundException("Motorista não encontrado com o ID: " + id);
-        }
+    public void deleteAll() {
+        veiculoRepository.deleteAll();
+        motoristaRepository.deleteAll();
     }
 }

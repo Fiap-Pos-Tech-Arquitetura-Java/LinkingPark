@@ -1,11 +1,10 @@
 package br.com.fiap.postech.linkingpark.message.sender;
 
-import br.com.fiap.postech.linkingpark.entities.CompraTempo;
+import br.com.fiap.postech.linkingpark.documents.CompraTempo;
 import br.com.fiap.postech.linkingpark.message.config.QueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,7 @@ public class QueueSender {
         send(recompraAutomaticaQueueName, compraTempo.getId(), periodoRecarga);
     }
 
-    private void send(String queueName, Long idCompraTempo, Long delay) {
+    private void send(String queueName, String idCompraTempo, Long delay) {
         LOGGER.info("enviando mensagem para a fila " + queueName +
                 " da compra " + idCompraTempo + " com o delay " + delay);
         try {

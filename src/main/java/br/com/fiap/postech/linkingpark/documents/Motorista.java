@@ -1,18 +1,17 @@
-package br.com.fiap.postech.linkingpark.entities;
+package br.com.fiap.postech.linkingpark.documents;
 
-
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "tb_motorista")
+@Document("motorista")
 public class Motorista {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private Long cpf;
     private String nome;
@@ -20,9 +19,9 @@ public class Motorista {
     private String telefone;
     private LocalDate dataNascimento;
     private String sexo;
-    @OneToMany
+    @DBRef
     private List<Veiculo> veiculos;
-    @ManyToOne
+    @DBRef
     private FormaPagamento formaPagamentoPreferencial;
 
     public Motorista() {
@@ -68,11 +67,11 @@ public class Motorista {
                 '}';
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

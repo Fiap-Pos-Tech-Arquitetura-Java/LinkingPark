@@ -1,6 +1,6 @@
 package br.com.fiap.postech.linkingpark.service;
 
-import br.com.fiap.postech.linkingpark.entities.CompraTempo;
+import br.com.fiap.postech.linkingpark.documents.CompraTempo;
 import br.com.fiap.postech.linkingpark.message.email.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

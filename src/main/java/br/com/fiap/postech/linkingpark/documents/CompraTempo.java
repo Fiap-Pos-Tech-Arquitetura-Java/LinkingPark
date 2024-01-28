@@ -1,21 +1,20 @@
-package br.com.fiap.postech.linkingpark.entities;
+package br.com.fiap.postech.linkingpark.documents;
 
-
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tb_compra_tempo")
+@Document("compra_tempo")
 public class CompraTempo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne()
+    private String id;
+    @DBRef
     private Motorista motorista;
 
-    @ManyToOne
+    @DBRef
     private Veiculo veiculo;
 
     private String status;
@@ -24,7 +23,7 @@ public class CompraTempo {
 
     private Double tarifa;
 
-    @ManyToOne
+    @DBRef
     private FormaPagamento formaPagamentoPreferencial;
 
     public CompraTempo() {
@@ -72,11 +71,11 @@ public class CompraTempo {
                 "\r\n}";
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -123,7 +122,7 @@ public class CompraTempo {
     }
 
     public void adicionaUmaHora() {
-        setTempoEmMinutos(getTempoEmMinutos() + 2);
+        setTempoEmMinutos(getTempoEmMinutos() + 60);
     }
 
     public FormaPagamento getFormaPagamentoPreferencial() {
