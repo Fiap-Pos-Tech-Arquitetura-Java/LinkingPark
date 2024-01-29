@@ -6,14 +6,17 @@ import br.com.fiap.postech.linkingpark.dto.MotoristaDTO;
 import br.com.fiap.postech.linkingpark.dto.VeiculoDTO;
 import br.com.fiap.postech.linkingpark.documents.Motorista;
 import br.com.fiap.postech.linkingpark.documents.Veiculo;
-import br.com.fiap.postech.linkingpark.repository.FormaPagamentoRepository;
 import br.com.fiap.postech.linkingpark.repository.MotoristaRepository;
 import br.com.fiap.postech.linkingpark.repository.VeiculoRepository;
+import br.com.fiap.postech.linkingpark.security.JwtService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +27,8 @@ public class MotoristaService {
     private VeiculoRepository veiculoRepository;
     @Autowired
     private FormaPagamentoService formaPagamentoService;
+    @Autowired
+    private JwtService jstService;
 
     public List<MotoristaDTO> findAll() {
         List<Motorista> motoristas = motoristaRepository.findAll();
@@ -40,6 +45,12 @@ public class MotoristaService {
     }
 
     public MotoristaDTO save(MotoristaDTO motoristaDTO) {
+        if (motoristaRepository.findByEmail(motoristaDTO.email()).isPresent()) {
+            throw new ControllerNotFoundException("Já existe um motorista cadastrado com esse email.");
+        }
+        if (motoristaRepository.findByCpf(motoristaDTO.cpf()).isPresent()) {
+            throw new ControllerNotFoundException("Já existe um motorista cadastrado com esse CPF.");
+        }
         Motorista motorista = toEntity(motoristaDTO);
         motorista = motoristaRepository.save(motorista);
         return toDTO(motorista);
@@ -48,9 +59,33 @@ public class MotoristaService {
     public MotoristaDTO update(String id, MotoristaDTO motoristaDTO) {
         Motorista motorista = get(id);
 
-        motorista.setNome(motoristaDTO.nome());
-        motorista.setEmail(motoristaDTO.email());
-        motorista.setTelefone(motoristaDTO.telefone());
+        if (StringUtils.isNotEmpty(motoristaDTO.nome())) {
+            motorista.setNome(motoristaDTO.nome());
+        }
+        if (motoristaDTO.id() != null && !motorista.getId().equals(motoristaDTO.id())) {
+            throw new ControllerNotFoundException("Não é possível alterar o id de um motorista.");
+        }
+        if (motoristaDTO.email() != null && !motorista.getEmail().equals(motoristaDTO.email())) {
+            throw new ControllerNotFoundException("Não é possível alterar o email de um motorista.");
+        }
+        if (motoristaDTO.cpf() != null && !motorista.getCpf().equals(motoristaDTO.cpf())) {
+            throw new ControllerNotFoundException("Não é possível alterar o CPF de um motorista.");
+        }
+        if (StringUtils.isNotEmpty(motoristaDTO.senha())) {
+            motorista.setSenha(getEncryptedPassword(motoristaDTO.senha()));
+        }
+        if (StringUtils.isNotEmpty(motoristaDTO.telefone())) {
+            motorista.setTelefone(motoristaDTO.telefone());
+        }
+        if (motoristaDTO.dataNascimento() != null) {
+            motorista.setDataNascimento(motoristaDTO.dataNascimento());
+        }
+        if (StringUtils.isNotEmpty(motoristaDTO.sexo())) {
+            motorista.setSexo(motoristaDTO.sexo());
+        }
+        if (motoristaDTO.formaPagamentoPreferencial() != null && motoristaDTO.formaPagamentoPreferencial().nome() != null) {
+            motorista.setFormaPagamentoPreferencial(formaPagamentoService.findByNome(motoristaDTO.formaPagamentoPreferencial().nome()));
+        }
 
         motorista = motoristaRepository.save(motorista);
         return toDTO(Boolean.FALSE, motorista);
@@ -62,6 +97,7 @@ public class MotoristaService {
 
     private Motorista toEntity(MotoristaDTO motoristaDTO) {
         return new Motorista(
+                getEncryptedPassword(motoristaDTO.senha()),
                 motoristaDTO.cpf(),
                 motoristaDTO.nome(),
                 motoristaDTO.email(),
@@ -72,8 +108,12 @@ public class MotoristaService {
         );
     }
 
-    private Veiculo toVeiculoEntity(VeiculoDTO veiculoDTO) {
-        return new Veiculo(veiculoDTO.placa(), veiculoDTO.modelo(), veiculoDTO.cor());
+    private String getEncryptedPassword(String senha) {
+        if (senha != null) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            return encoder.encode(senha);
+        }
+        return null;
     }
 
     private MotoristaDTO toDTO(Motorista motorista) {
@@ -83,6 +123,7 @@ public class MotoristaService {
     private MotoristaDTO toDTO(Boolean includeId, Motorista motorista) {
         return new MotoristaDTO(
                 getId(includeId, motorista),
+                motorista.getSenha(),
                 motorista.getCpf(),
                 motorista.getNome(),
                 motorista.getEmail(),
@@ -144,5 +185,18 @@ public class MotoristaService {
     public void deleteAll() {
         veiculoRepository.deleteAll();
         motoristaRepository.deleteAll();
+    }
+
+    public String login(MotoristaDTO motoristaDTO) throws Exception {
+        Optional<Motorista> optionalMotorista = motoristaRepository.findByEmail(motoristaDTO.email());
+        if (optionalMotorista.isEmpty()) {
+            throw new Exception("Motorista informado não encontrado.");
+        }
+        Motorista u = optionalMotorista.get();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(motoristaDTO.senha(), u.getSenha())) {
+            throw new Exception("Senha do Motorista informado não confere.");
+        }
+        return jstService.generateToken(motoristaDTO.email());
     }
 }

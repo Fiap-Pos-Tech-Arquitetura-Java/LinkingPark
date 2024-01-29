@@ -12,7 +12,7 @@ public class Motorista {
 
     @Id
     private String id;
-
+    private String senha;
     private Long cpf;
     private String nome;
     private String email;
@@ -28,7 +28,9 @@ public class Motorista {
         super();
     }
 
-    public Motorista(Long cpf, String nome, String email, String telefone, LocalDate dataNascimento, String sexo, FormaPagamento formaPagamentoPreferencial) {
+    public Motorista(String senha, Long cpf, String nome, String email, String telefone,
+                     LocalDate dataNascimento, String sexo, FormaPagamento formaPagamentoPreferencial) {
+        this.senha = senha;
         this.cpf = cpf;
         this.nome = nome;
         this.email = email;
@@ -57,6 +59,7 @@ public class Motorista {
     public String toString() {
         return "Motorista{" +
                 "id=" + id +
+                ", senha='" + senha + '\'' +
                 ", cpf='" + cpf + '\'' +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
@@ -73,6 +76,14 @@ public class Motorista {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public Long getCpf() {

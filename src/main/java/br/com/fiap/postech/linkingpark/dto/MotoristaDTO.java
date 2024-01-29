@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record MotoristaDTO(
         String id,
+
+        @NotBlank(message = "Senha do Motorista é obrigatório")
+        String senha,
 
         @NotBlank(message = "Cpf do Motorista é obrigatório")
         Long cpf,

@@ -31,9 +31,9 @@ public class LinkingParkApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (clearCollections) {
-            this.formaPagamentoService.deleteAll();
-            this.motoristaService.deleteAll();
             this.compraTempoService.deleteAll();
+            this.motoristaService.deleteAll();
+            this.formaPagamentoService.deleteAll();
             this.formaPagamentoService.save(new FormaPagamentoDTO(null,"PIX"));
             this.formaPagamentoService.save(new FormaPagamentoDTO(null,"Cartão de débito"));
             this.formaPagamentoService.save(new FormaPagamentoDTO(null,"Cartão de crédito"));

@@ -74,4 +74,17 @@ public class MotoristaController {
         List<VeiculoDTO> veiculos = motoristaService.findAllVeiculos(id);
         return ResponseEntity.ok(veiculos);
     }
+
+    @Operation(summary = "realiza o login do motorista")
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody MotoristaDTO motoristaDTO) {
+        String token = null;
+        try {
+            token = motoristaService.login(motoristaDTO);
+        } catch (Exception e) {
+            //throw new RuntimeException(e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(token, HttpStatus.CREATED);
+    }
 }
